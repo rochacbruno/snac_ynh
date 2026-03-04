@@ -1,1 +1,1 @@
-Ceci est une fausse description des fonctionalités de l'app
+snac2 est une instance ActivityPub simple et minimaliste. Il est écrit en C et utilise un système de stockage basé sur des fichiers, sans base de données requise. Il prend en charge la création et la gestion de comptes utilisateurs, la publication, le suivi et l'interaction avec le Fediverse. Il inclut également une API compatible Mastodon pour une utilisation avec des clients tiers.

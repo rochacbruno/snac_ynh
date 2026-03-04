@@ -1,0 +1,333 @@
+#:schema https://github.com/YunoHost/apps/raw/main/schemas/config_panel.v1.schema.json
+
+version = "1.0"
+
+[main]
+name = "snac2 Configuration"
+services = ["__APP__"]
+
+    ############################################################################
+    # Instance
+    ############################################################################
+    [main.instance]
+    name = "Instance"
+
+        [main.instance.title]
+        ask = "Instance title"
+        type = "string"
+        default = "snac2"
+        bind = "null"
+
+        [main.instance.short_description]
+        ask = "Short description"
+        type = "string"
+        optional = true
+        bind = "null"
+
+        [main.instance.admin_email]
+        ask = "Admin email"
+        type = "string"
+        optional = true
+        bind = "null"
+
+        [main.instance.admin_account]
+        ask = "Admin account"
+        type = "string"
+        help = "Username shown as admin on the instance"
+        bind = "null"
+
+        [main.instance.show_instance_timeline]
+        ask = "Show instance timeline"
+        type = "boolean"
+        default = false
+        bind = "null"
+
+        [main.instance.favicon_url]
+        ask = "Favicon URL"
+        type = "string"
+        optional = true
+        help = "URL to a custom favicon"
+        bind = "null"
+
+    ############################################################################
+    # Timeline
+    ############################################################################
+    [main.timeline]
+    name = "Timeline"
+
+        [main.timeline.def_timeline_entries]
+        ask = "Default timeline entries"
+        type = "number"
+        default = 50
+        bind = "null"
+
+        [main.timeline.max_timeline_entries]
+        ask = "Maximum timeline entries"
+        type = "number"
+        default = 256
+        bind = "null"
+
+        [main.timeline.timeline_purge_days]
+        ask = "Timeline purge days"
+        type = "number"
+        default = 120
+        help = "Purge remote posts older than this many days (0 to disable)"
+        bind = "null"
+
+        [main.timeline.local_purge_days]
+        ask = "Local purge days"
+        type = "number"
+        default = 0
+        help = "Purge local posts older than this many days (0 to disable)"
+        bind = "null"
+
+        [main.timeline.max_public_entries]
+        ask = "Max public entries"
+        type = "number"
+        default = 128
+        bind = "null"
+
+        [main.timeline.strict_public_timelines]
+        ask = "Strict public timelines"
+        type = "boolean"
+        default = false
+        help = "Only show posts from accounts that are followed by at least one local user"
+        bind = "null"
+
+    ############################################################################
+    # Posts
+    ############################################################################
+    [main.posts]
+    name = "Posts"
+
+        [main.posts.max_attachments]
+        ask = "Max attachments per post"
+        type = "number"
+        default = 4
+        bind = "null"
+
+        [main.posts.max_poll_options]
+        ask = "Max poll options"
+        type = "number"
+        default = 8
+        bind = "null"
+
+        [main.posts.max_poll_option_length]
+        ask = "Max poll option length"
+        type = "number"
+        default = 50
+        bind = "null"
+
+        [main.posts.enable_svg]
+        ask = "Enable SVG attachments"
+        type = "boolean"
+        default = false
+        bind = "null"
+
+        [main.posts.hide_delete_post_button]
+        ask = "Hide delete post button"
+        type = "boolean"
+        default = false
+        bind = "null"
+
+    ############################################################################
+    # Media
+    ############################################################################
+    [main.media]
+    name = "Media"
+
+        [main.media.proxy_media]
+        ask = "Proxy remote media"
+        type = "boolean"
+        default = true
+        help = "Proxy remote media through this instance"
+        bind = "null"
+
+        [main.media.strip_exif]
+        ask = "Strip EXIF data"
+        type = "boolean"
+        default = true
+        help = "Remove EXIF metadata from uploaded images"
+        bind = "null"
+
+    ############################################################################
+    # Federation
+    ############################################################################
+    [main.federation]
+    name = "Federation"
+
+        [main.federation.queue_retry_minutes]
+        ask = "Queue retry interval (minutes)"
+        type = "number"
+        default = 3
+        bind = "null"
+
+        [main.federation.queue_retry_max]
+        ask = "Max queue retries"
+        type = "number"
+        default = 10
+        bind = "null"
+
+        [main.federation.queue_timeout]
+        ask = "Queue timeout (seconds)"
+        type = "number"
+        default = 6
+        bind = "null"
+
+        [main.federation.queue_timeout_2]
+        ask = "Queue timeout for large payloads (seconds)"
+        type = "number"
+        default = 8
+        bind = "null"
+
+        [main.federation.min_account_age]
+        ask = "Minimum account age (seconds)"
+        type = "number"
+        default = 3600
+        help = "Reject interactions from accounts younger than this (anti-spam)"
+        bind = "null"
+
+        [main.federation.shared_inboxes]
+        ask = "Use shared inboxes"
+        type = "boolean"
+        default = true
+        bind = "null"
+
+        [main.federation.max_failing_days]
+        ask = "Max failing days"
+        type = "number"
+        default = 7
+        help = "Stop trying to reach instances that have been failing for this many days"
+        bind = "null"
+
+        [main.federation.disable_inbox_collection]
+        ask = "Disable inbox collection"
+        type = "boolean"
+        default = false
+        bind = "null"
+
+    ############################################################################
+    # Security
+    ############################################################################
+    [main.security]
+    name = "Security"
+
+        [main.security.badlogin_retries]
+        ask = "Bad login retries"
+        type = "number"
+        default = 5
+        help = "Number of failed login attempts before temporary ban"
+        bind = "null"
+
+        [main.security.badlogin_expire]
+        ask = "Bad login expire (seconds)"
+        type = "number"
+        default = 300
+        help = "Duration of temporary ban after too many failed logins"
+        bind = "null"
+
+    ############################################################################
+    # Performance
+    ############################################################################
+    [main.performance]
+    name = "Performance"
+
+        [main.performance.num_threads]
+        ask = "Number of threads"
+        type = "number"
+        default = 8
+        bind = "null"
+
+        [main.performance.dbglevel]
+        ask = "Debug level"
+        type = "number"
+        default = 0
+        help = "0=errors only, 1=connections, 2=verbose"
+        bind = "null"
+
+        [main.performance.disable_cache]
+        ask = "Disable cache"
+        type = "boolean"
+        default = false
+        bind = "null"
+
+        [main.performance.rss_hashtag_poll_hours]
+        ask = "RSS hashtag poll hours"
+        type = "number"
+        default = 0
+        help = "Hours between RSS hashtag feed polls (0 to disable)"
+        bind = "null"
+
+    ############################################################################
+    # Features
+    ############################################################################
+    [main.features]
+    name = "Features"
+
+        [main.features.disable_email_notifications]
+        ask = "Disable email notifications"
+        type = "boolean"
+        default = false
+        bind = "null"
+
+        [main.features.disable_history]
+        ask = "Disable history"
+        type = "boolean"
+        default = false
+        bind = "null"
+
+        [main.features.disable_block_notifications]
+        ask = "Disable block notifications"
+        type = "boolean"
+        default = false
+        bind = "null"
+
+        [main.features.disable_emojireact]
+        ask = "Disable emoji reactions"
+        type = "boolean"
+        default = false
+        bind = "null"
+
+        [main.features.disable_notify_webhook]
+        ask = "Disable notify webhook"
+        type = "boolean"
+        default = false
+        bind = "null"
+
+    ############################################################################
+    # SMTP
+    ############################################################################
+    [main.smtp]
+    name = "SMTP"
+
+        [main.smtp.smtp_url]
+        ask = "SMTP URL"
+        type = "string"
+        optional = true
+        help = "e.g. smtp://localhost:25 or smtps://mail.example.com:465"
+        bind = "null"
+
+        [main.smtp.smtp_username]
+        ask = "SMTP username"
+        type = "string"
+        optional = true
+        bind = "null"
+
+        [main.smtp.smtp_password]
+        ask = "SMTP password"
+        type = "password"
+        optional = true
+        bind = "null"
+
+    ############################################################################
+    # CSS
+    ############################################################################
+    [main.css]
+    name = "CSS"
+
+        [main.css.cssurls]
+        ask = "CSS URLs"
+        type = "string"
+        optional = true
+        help = "Comma-separated list of CSS URLs to apply to the instance"
+        bind = "null"

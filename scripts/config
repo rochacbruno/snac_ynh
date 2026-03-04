@@ -1,12 +1,4 @@
 #!/bin/bash
-# In simple cases, you don't need a config script.
-
-# With a simple config_panel.toml, you can write in the app settings, in the
-# upstream config file or replace complete files (logo ...) and restart services.
-
-# The config scripts allows you to go further, to handle specific cases
-# (validation of several interdependent fields, specific getter/setter for a value,
-# display dynamic informations or choices, pre-loading of config type .cube... ).
 
 #=================================================
 # IMPORT GENERIC HELPERS
@@ -14,82 +6,407 @@
 
 source /usr/share/yunohost/helpers
 
-ynh_abort_if_errors
-
 #=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
 
 install_dir=$(ynh_app_setting_get --key=install_dir)
+data_dir=$(ynh_app_setting_get --key=data_dir)
 
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
 
-get__amount() {
-    # Here we can imagine to have an API call to stripe to know the amount of donation during a month
-    local amount=200
-
-    # It's possible to change some properties of the question by overriding it:
-    if [ "$amount" -gt 100 ]; then
-    cat << EOF
-style: success
-value: $amount
-ask:
-  en: A lot of donation this month: **$amount €**
-EOF
-    else
-    cat << EOF
-style: danger
-value: $amount
-ask:
-  en: Not so much donation this month: $amount €
-EOF
-    fi
+_read_json() {
+    local key="$1"
+    python3 -c "
+import json, sys
+with open('$data_dir/server.json') as f:
+    data = json.load(f)
+v = data.get('$key', '')
+if isinstance(v, bool):
+    print('true' if v else 'false')
+elif isinstance(v, list):
+    print(','.join(str(i) for i in v))
+else:
+    print(v)
+"
 }
 
-get__prices() {
-    local prices
-    prices="$(grep "DONATION\['" "$install_dir/settings.py" | sed -r "s@^DONATION\['([^']*)'\]\['([^']*)'\] = '([^']*)'@\1/\2/\3@g" | sed -z 's/\n/,/g;s/,$/\n/')"
-    if [ "$prices" == "," ]; then
-        # Return YNH_NULL if you prefer to not return a value at all.
-        echo YNH_NULL
-    else
-        echo "$prices"
-    fi
+_write_json() {
+    local key="$1"
+    local value="$2"
+    local value_type="$3"  # string, number, boolean, or array
+    python3 -c "
+import json
+with open('$data_dir/server.json') as f:
+    data = json.load(f)
+key = '$key'
+value = '''$value'''
+value_type = '$value_type'
+if value_type == 'boolean':
+    data[key] = value.lower() in ('true', '1', 'yes')
+elif value_type == 'number':
+    try:
+        data[key] = int(value)
+    except ValueError:
+        data[key] = float(value)
+elif value_type == 'array':
+    if value.strip():
+        data[key] = [s.strip() for s in value.split(',')]
+    else:
+        data[key] = []
+else:
+    data[key] = value
+with open('$data_dir/server.json', 'w') as f:
+    json.dump(data, f, indent=4)
+"
 }
 
-#=================================================
-# SPECIFIC VALIDATORS FOR TOML SHORT KEYS
-#=================================================
-validate__publishable_key() {
-
-    # We can imagine here we test if the key is really a publishable key
-    (is_secret_key "$publishable_key") &&
-        echo 'This key seems to be a secret key'
+# Instance settings
+get__title() {
+    echo "$(_read_json title)"
+}
+set__title() {
+    _write_json title "$title" string
+    ynh_app_setting_set --key=title --value="$title"
 }
 
-#=================================================
-# SPECIFIC SETTERS FOR TOML SHORT KEYS
-#=================================================
-set__prices() {
+get__short_description() {
+    echo "$(_read_json short_description)"
+}
+set__short_description() {
+    _write_json short_description "$short_description" string
+    ynh_app_setting_set --key=short_description --value="$short_description"
+}
 
-    #---------------------------------------------
-    # IMPORTANT: setters are triggered only if a change is detected
-    #---------------------------------------------
-    for price in $(echo "$prices" | sed "s/,/ /"); do
-        frequency=$(echo "$price" | cut -d/ -f1)
-        currency=$(echo "$price" | cut -d/ -f2)
-        price_id=$(echo "$price" | cut -d/ -f3)
-        sed "d/DONATION\['$frequency'\]\['$currency'\]" "$install_dir/settings.py"
+get__admin_email() {
+    echo "$(_read_json admin_email)"
+}
+set__admin_email() {
+    _write_json admin_email "$admin_email" string
+    ynh_app_setting_set --key=admin_email --value="$admin_email"
+}
 
-        echo "DONATION['$frequency']['$currency'] = '$price_id'" >> "$install_dir/settings.py"
-    done
+get__admin_account() {
+    echo "$(_read_json admin_account)"
+}
+set__admin_account() {
+    _write_json admin_account "$admin_account" string
+    ynh_app_setting_set --key=admin_account --value="$admin_account"
+}
 
-    #---------------------------------------------
-    # IMPORTANT: to be able to upgrade properly, you have to save the value in settings too
-    #---------------------------------------------
-    ynh_app_setting_set --key=prices --value="$prices"
+get__show_instance_timeline() {
+    echo "$(_read_json show_instance_timeline)"
+}
+set__show_instance_timeline() {
+    _write_json show_instance_timeline "$show_instance_timeline" boolean
+    ynh_app_setting_set --key=show_instance_timeline --value="$show_instance_timeline"
+}
+
+get__favicon_url() {
+    echo "$(_read_json favicon_url)"
+}
+set__favicon_url() {
+    _write_json favicon_url "$favicon_url" string
+    ynh_app_setting_set --key=favicon_url --value="$favicon_url"
+}
+
+# Timeline settings
+get__def_timeline_entries() {
+    echo "$(_read_json def_timeline_entries)"
+}
+set__def_timeline_entries() {
+    _write_json def_timeline_entries "$def_timeline_entries" number
+    ynh_app_setting_set --key=def_timeline_entries --value="$def_timeline_entries"
+}
+
+get__max_timeline_entries() {
+    echo "$(_read_json max_timeline_entries)"
+}
+set__max_timeline_entries() {
+    _write_json max_timeline_entries "$max_timeline_entries" number
+    ynh_app_setting_set --key=max_timeline_entries --value="$max_timeline_entries"
+}
+
+get__timeline_purge_days() {
+    echo "$(_read_json timeline_purge_days)"
+}
+set__timeline_purge_days() {
+    _write_json timeline_purge_days "$timeline_purge_days" number
+    ynh_app_setting_set --key=timeline_purge_days --value="$timeline_purge_days"
+}
+
+get__local_purge_days() {
+    echo "$(_read_json local_purge_days)"
+}
+set__local_purge_days() {
+    _write_json local_purge_days "$local_purge_days" number
+    ynh_app_setting_set --key=local_purge_days --value="$local_purge_days"
+}
+
+get__max_public_entries() {
+    echo "$(_read_json max_public_entries)"
+}
+set__max_public_entries() {
+    _write_json max_public_entries "$max_public_entries" number
+    ynh_app_setting_set --key=max_public_entries --value="$max_public_entries"
+}
+
+get__strict_public_timelines() {
+    echo "$(_read_json strict_public_timelines)"
+}
+set__strict_public_timelines() {
+    _write_json strict_public_timelines "$strict_public_timelines" boolean
+    ynh_app_setting_set --key=strict_public_timelines --value="$strict_public_timelines"
+}
+
+# Posts settings
+get__max_attachments() {
+    echo "$(_read_json max_attachments)"
+}
+set__max_attachments() {
+    _write_json max_attachments "$max_attachments" number
+    ynh_app_setting_set --key=max_attachments --value="$max_attachments"
+}
+
+get__max_poll_options() {
+    echo "$(_read_json max_poll_options)"
+}
+set__max_poll_options() {
+    _write_json max_poll_options "$max_poll_options" number
+    ynh_app_setting_set --key=max_poll_options --value="$max_poll_options"
+}
+
+get__max_poll_option_length() {
+    echo "$(_read_json max_poll_option_length)"
+}
+set__max_poll_option_length() {
+    _write_json max_poll_option_length "$max_poll_option_length" number
+    ynh_app_setting_set --key=max_poll_option_length --value="$max_poll_option_length"
+}
+
+get__enable_svg() {
+    echo "$(_read_json enable_svg)"
+}
+set__enable_svg() {
+    _write_json enable_svg "$enable_svg" boolean
+    ynh_app_setting_set --key=enable_svg --value="$enable_svg"
+}
+
+get__hide_delete_post_button() {
+    echo "$(_read_json hide_delete_post_button)"
+}
+set__hide_delete_post_button() {
+    _write_json hide_delete_post_button "$hide_delete_post_button" boolean
+    ynh_app_setting_set --key=hide_delete_post_button --value="$hide_delete_post_button"
+}
+
+# Media settings
+get__proxy_media() {
+    echo "$(_read_json proxy_media)"
+}
+set__proxy_media() {
+    _write_json proxy_media "$proxy_media" boolean
+    ynh_app_setting_set --key=proxy_media --value="$proxy_media"
+}
+
+get__strip_exif() {
+    echo "$(_read_json strip_exif)"
+}
+set__strip_exif() {
+    _write_json strip_exif "$strip_exif" boolean
+    ynh_app_setting_set --key=strip_exif --value="$strip_exif"
+}
+
+# Federation settings
+get__queue_retry_minutes() {
+    echo "$(_read_json queue_retry_minutes)"
+}
+set__queue_retry_minutes() {
+    _write_json queue_retry_minutes "$queue_retry_minutes" number
+    ynh_app_setting_set --key=queue_retry_minutes --value="$queue_retry_minutes"
+}
+
+get__queue_retry_max() {
+    echo "$(_read_json queue_retry_max)"
+}
+set__queue_retry_max() {
+    _write_json queue_retry_max "$queue_retry_max" number
+    ynh_app_setting_set --key=queue_retry_max --value="$queue_retry_max"
+}
+
+get__queue_timeout() {
+    echo "$(_read_json queue_timeout)"
+}
+set__queue_timeout() {
+    _write_json queue_timeout "$queue_timeout" number
+    ynh_app_setting_set --key=queue_timeout --value="$queue_timeout"
+}
+
+get__queue_timeout_2() {
+    echo "$(_read_json queue_timeout_2)"
+}
+set__queue_timeout_2() {
+    _write_json queue_timeout_2 "$queue_timeout_2" number
+    ynh_app_setting_set --key=queue_timeout_2 --value="$queue_timeout_2"
+}
+
+get__min_account_age() {
+    echo "$(_read_json min_account_age)"
+}
+set__min_account_age() {
+    _write_json min_account_age "$min_account_age" number
+    ynh_app_setting_set --key=min_account_age --value="$min_account_age"
+}
+
+get__shared_inboxes() {
+    echo "$(_read_json shared_inboxes)"
+}
+set__shared_inboxes() {
+    _write_json shared_inboxes "$shared_inboxes" boolean
+    ynh_app_setting_set --key=shared_inboxes --value="$shared_inboxes"
+}
+
+get__max_failing_days() {
+    echo "$(_read_json max_failing_days)"
+}
+set__max_failing_days() {
+    _write_json max_failing_days "$max_failing_days" number
+    ynh_app_setting_set --key=max_failing_days --value="$max_failing_days"
+}
+
+get__disable_inbox_collection() {
+    echo "$(_read_json disable_inbox_collection)"
+}
+set__disable_inbox_collection() {
+    _write_json disable_inbox_collection "$disable_inbox_collection" boolean
+    ynh_app_setting_set --key=disable_inbox_collection --value="$disable_inbox_collection"
+}
+
+# Security settings
+get__badlogin_retries() {
+    echo "$(_read_json badlogin_retries)"
+}
+set__badlogin_retries() {
+    _write_json badlogin_retries "$badlogin_retries" number
+    ynh_app_setting_set --key=badlogin_retries --value="$badlogin_retries"
+}
+
+get__badlogin_expire() {
+    echo "$(_read_json badlogin_expire)"
+}
+set__badlogin_expire() {
+    _write_json badlogin_expire "$badlogin_expire" number
+    ynh_app_setting_set --key=badlogin_expire --value="$badlogin_expire"
+}
+
+# Performance settings
+get__num_threads() {
+    echo "$(_read_json num_threads)"
+}
+set__num_threads() {
+    _write_json num_threads "$num_threads" number
+    ynh_app_setting_set --key=num_threads --value="$num_threads"
+}
+
+get__dbglevel() {
+    echo "$(_read_json dbglevel)"
+}
+set__dbglevel() {
+    _write_json dbglevel "$dbglevel" number
+    ynh_app_setting_set --key=dbglevel --value="$dbglevel"
+}
+
+get__disable_cache() {
+    echo "$(_read_json disable_cache)"
+}
+set__disable_cache() {
+    _write_json disable_cache "$disable_cache" boolean
+    ynh_app_setting_set --key=disable_cache --value="$disable_cache"
+}
+
+get__rss_hashtag_poll_hours() {
+    echo "$(_read_json rss_hashtag_poll_hours)"
+}
+set__rss_hashtag_poll_hours() {
+    _write_json rss_hashtag_poll_hours "$rss_hashtag_poll_hours" number
+    ynh_app_setting_set --key=rss_hashtag_poll_hours --value="$rss_hashtag_poll_hours"
+}
+
+# Features settings
+get__disable_email_notifications() {
+    echo "$(_read_json disable_email_notifications)"
+}
+set__disable_email_notifications() {
+    _write_json disable_email_notifications "$disable_email_notifications" boolean
+    ynh_app_setting_set --key=disable_email_notifications --value="$disable_email_notifications"
+}
+
+get__disable_history() {
+    echo "$(_read_json disable_history)"
+}
+set__disable_history() {
+    _write_json disable_history "$disable_history" boolean
+    ynh_app_setting_set --key=disable_history --value="$disable_history"
+}
+
+get__disable_block_notifications() {
+    echo "$(_read_json disable_block_notifications)"
+}
+set__disable_block_notifications() {
+    _write_json disable_block_notifications "$disable_block_notifications" boolean
+    ynh_app_setting_set --key=disable_block_notifications --value="$disable_block_notifications"
+}
+
+get__disable_emojireact() {
+    echo "$(_read_json disable_emojireact)"
+}
+set__disable_emojireact() {
+    _write_json disable_emojireact "$disable_emojireact" boolean
+    ynh_app_setting_set --key=disable_emojireact --value="$disable_emojireact"
+}
+
+get__disable_notify_webhook() {
+    echo "$(_read_json disable_notify_webhook)"
+}
+set__disable_notify_webhook() {
+    _write_json disable_notify_webhook "$disable_notify_webhook" boolean
+    ynh_app_setting_set --key=disable_notify_webhook --value="$disable_notify_webhook"
+}
+
+# SMTP settings
+get__smtp_url() {
+    echo "$(_read_json smtp_url)"
+}
+set__smtp_url() {
+    _write_json smtp_url "$smtp_url" string
+    ynh_app_setting_set --key=smtp_url --value="$smtp_url"
+}
+
+get__smtp_username() {
+    echo "$(_read_json smtp_username)"
+}
+set__smtp_username() {
+    _write_json smtp_username "$smtp_username" string
+    ynh_app_setting_set --key=smtp_username --value="$smtp_username"
+}
+
+get__smtp_password() {
+    echo "$(_read_json smtp_password)"
+}
+set__smtp_password() {
+    _write_json smtp_password "$smtp_password" string
+    ynh_app_setting_set --key=smtp_password --value="$smtp_password"
+}
+
+# CSS settings
+get__cssurls() {
+    echo "$(_read_json cssurls)"
+}
+set__cssurls() {
+    _write_json cssurls "$cssurls" array
+    ynh_app_setting_set --key=cssurls --value="$cssurls"
 }
 
 #=================================================

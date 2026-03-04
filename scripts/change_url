@@ -1,9 +1,5 @@
 #!/bin/bash
 
-## this script is only run if actual change to domain/path is detected, if you're here either $domain or $path changed
-## new location is available via $domain and $path (or $new_domain and $new_path variables if you want to be explicit)
-## old values are available via, you guessed it, $old_domain and $old_path
-
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
@@ -23,14 +19,21 @@ ynh_systemctl --service="$app" --action="stop"
 #=================================================
 ynh_script_progression "Updating NGINX web server configuration..."
 
-# this will most likely adjust NGINX config correctly
 ynh_config_change_url_nginx
 
 #=================================================
-# SPECIFIC MODIFICATIONS
+# UPDATE SNAC2 CONFIGURATION
 #=================================================
+ynh_script_progression "Updating snac2 configuration..."
 
-## do any changes to files that reference specific installation domain/path, i.e. regenerate configs etc
+# Recompute path prefix with new path
+compute_path_prefix
+ynh_app_setting_set --key=path_prefix --value="$path_prefix"
+
+# Regenerate server.json with new domain/path
+ynh_config_add --template="server.json" --destination="$data_dir/server.json"
+chmod 600 "$data_dir/server.json"
+chown "$app:$app" "$data_dir/server.json"
 
 #=================================================
 # START SYSTEMD SERVICE
