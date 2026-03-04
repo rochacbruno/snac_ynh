@@ -94,6 +94,9 @@ chown -R "$app:www-data" "$install_dir"
 #=================================================
 ynh_script_progression "Updating $app's configuration files..."
 
+# Load all settings into bash variables for template substitution
+load_server_settings
+
 ynh_config_add --template="server.json" --destination="$data_dir/server.json"
 chmod 600 "$data_dir/server.json"
 chown "$app:$app" "$data_dir/server.json"

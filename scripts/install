@@ -21,45 +21,87 @@ compute_path_prefix
 ynh_app_setting_set --key=path_prefix --value="$path_prefix"
 
 # Set defaults for all server.json settings
-ynh_app_setting_set --key=dbglevel --value=0
-ynh_app_setting_set --key=queue_retry_minutes --value=3
-ynh_app_setting_set --key=queue_retry_max --value=10
-ynh_app_setting_set --key=queue_timeout --value=6
-ynh_app_setting_set --key=queue_timeout_2 --value=8
-ynh_app_setting_set --key=num_threads --value=8
-ynh_app_setting_set --key=def_timeline_entries --value=50
-ynh_app_setting_set --key=max_timeline_entries --value=256
-ynh_app_setting_set --key=timeline_purge_days --value=120
-ynh_app_setting_set --key=local_purge_days --value=0
-ynh_app_setting_set --key=min_account_age --value=3600
-ynh_app_setting_set --key=short_description --value=""
-ynh_app_setting_set --key=cssurls --value=""
-ynh_app_setting_set --key=max_attachments --value=4
-ynh_app_setting_set --key=max_poll_options --value=8
-ynh_app_setting_set --key=max_poll_option_length --value=50
-ynh_app_setting_set --key=max_public_entries --value=128
-ynh_app_setting_set --key=proxy_media --value=true
-ynh_app_setting_set --key=show_instance_timeline --value=false
-ynh_app_setting_set --key=strip_exif --value=true
-ynh_app_setting_set --key=enable_svg --value=false
-ynh_app_setting_set --key=shared_inboxes --value=true
-ynh_app_setting_set --key=badlogin_retries --value=5
-ynh_app_setting_set --key=badlogin_expire --value=300
-ynh_app_setting_set --key=max_failing_days --value=7
-ynh_app_setting_set --key=disable_cache --value=false
-ynh_app_setting_set --key=disable_email_notifications --value=false
-ynh_app_setting_set --key=disable_inbox_collection --value=false
-ynh_app_setting_set --key=disable_history --value=false
-ynh_app_setting_set --key=disable_block_notifications --value=false
-ynh_app_setting_set --key=disable_emojireact --value=false
-ynh_app_setting_set --key=disable_notify_webhook --value=false
-ynh_app_setting_set --key=strict_public_timelines --value=false
-ynh_app_setting_set --key=hide_delete_post_button --value=false
-ynh_app_setting_set --key=favicon_url --value=""
-ynh_app_setting_set --key=rss_hashtag_poll_hours --value=0
-ynh_app_setting_set --key=smtp_url --value=""
-ynh_app_setting_set --key=smtp_username --value=""
-ynh_app_setting_set --key=smtp_password --value=""
+# Each variable must exist as a bash variable for ynh_config_add template substitution
+dbglevel=0
+queue_retry_minutes=3
+queue_retry_max=10
+queue_timeout=6
+queue_timeout_2=8
+num_threads=8
+def_timeline_entries=50
+max_timeline_entries=256
+timeline_purge_days=120
+local_purge_days=0
+min_account_age=3600
+short_description=""
+cssurls=""
+max_attachments=4
+max_poll_options=8
+max_poll_option_length=50
+max_public_entries=128
+proxy_media=true
+show_instance_timeline=false
+strip_exif=true
+enable_svg=false
+shared_inboxes=true
+badlogin_retries=5
+badlogin_expire=300
+max_failing_days=7
+disable_cache=false
+disable_email_notifications=false
+disable_inbox_collection=false
+disable_history=false
+disable_block_notifications=false
+disable_emojireact=false
+disable_notify_webhook=false
+strict_public_timelines=false
+hide_delete_post_button=false
+favicon_url=""
+rss_hashtag_poll_hours=0
+smtp_url=""
+smtp_username=""
+smtp_password=""
+
+# Persist all settings
+ynh_app_setting_set --key=dbglevel --value="$dbglevel"
+ynh_app_setting_set --key=queue_retry_minutes --value="$queue_retry_minutes"
+ynh_app_setting_set --key=queue_retry_max --value="$queue_retry_max"
+ynh_app_setting_set --key=queue_timeout --value="$queue_timeout"
+ynh_app_setting_set --key=queue_timeout_2 --value="$queue_timeout_2"
+ynh_app_setting_set --key=num_threads --value="$num_threads"
+ynh_app_setting_set --key=def_timeline_entries --value="$def_timeline_entries"
+ynh_app_setting_set --key=max_timeline_entries --value="$max_timeline_entries"
+ynh_app_setting_set --key=timeline_purge_days --value="$timeline_purge_days"
+ynh_app_setting_set --key=local_purge_days --value="$local_purge_days"
+ynh_app_setting_set --key=min_account_age --value="$min_account_age"
+ynh_app_setting_set --key=short_description --value="$short_description"
+ynh_app_setting_set --key=cssurls --value="$cssurls"
+ynh_app_setting_set --key=max_attachments --value="$max_attachments"
+ynh_app_setting_set --key=max_poll_options --value="$max_poll_options"
+ynh_app_setting_set --key=max_poll_option_length --value="$max_poll_option_length"
+ynh_app_setting_set --key=max_public_entries --value="$max_public_entries"
+ynh_app_setting_set --key=proxy_media --value="$proxy_media"
+ynh_app_setting_set --key=show_instance_timeline --value="$show_instance_timeline"
+ynh_app_setting_set --key=strip_exif --value="$strip_exif"
+ynh_app_setting_set --key=enable_svg --value="$enable_svg"
+ynh_app_setting_set --key=shared_inboxes --value="$shared_inboxes"
+ynh_app_setting_set --key=badlogin_retries --value="$badlogin_retries"
+ynh_app_setting_set --key=badlogin_expire --value="$badlogin_expire"
+ynh_app_setting_set --key=max_failing_days --value="$max_failing_days"
+ynh_app_setting_set --key=disable_cache --value="$disable_cache"
+ynh_app_setting_set --key=disable_email_notifications --value="$disable_email_notifications"
+ynh_app_setting_set --key=disable_inbox_collection --value="$disable_inbox_collection"
+ynh_app_setting_set --key=disable_history --value="$disable_history"
+ynh_app_setting_set --key=disable_block_notifications --value="$disable_block_notifications"
+ynh_app_setting_set --key=disable_emojireact --value="$disable_emojireact"
+ynh_app_setting_set --key=disable_notify_webhook --value="$disable_notify_webhook"
+ynh_app_setting_set --key=strict_public_timelines --value="$strict_public_timelines"
+ynh_app_setting_set --key=hide_delete_post_button --value="$hide_delete_post_button"
+ynh_app_setting_set --key=favicon_url --value="$favicon_url"
+ynh_app_setting_set --key=rss_hashtag_poll_hours --value="$rss_hashtag_poll_hours"
+ynh_app_setting_set --key=smtp_url --value="$smtp_url"
+ynh_app_setting_set --key=smtp_username --value="$smtp_username"
+ynh_app_setting_set --key=smtp_password --value="$smtp_password"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE

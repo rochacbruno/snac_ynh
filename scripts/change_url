@@ -30,6 +30,9 @@ ynh_script_progression "Updating snac2 configuration..."
 compute_path_prefix
 ynh_app_setting_set --key=path_prefix --value="$path_prefix"
 
+# Load all settings into bash variables for template substitution
+load_server_settings
+
 # Regenerate server.json with new domain/path
 ynh_config_add --template="server.json" --destination="$data_dir/server.json"
 chmod 600 "$data_dir/server.json"
