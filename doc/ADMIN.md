@@ -8,16 +8,16 @@ A `snac-admin` wrapper is installed for convenience. Run commands as the snac us
 
 ```bash
 # Add a new user
-sudo -u __ID__ snac-admin adduser username
+snac-admin adduser username
 
 # List users
-sudo -u __ID__ snac-admin userlist
+snac-admin userlist
 
 # Reset a user's password
-sudo -u __ID__ snac-admin resetpwd username
+snac-admin resetpwd username
 
 # Check and purge old data
-sudo -u __ID__ snac-admin purge
+snac-admin purge
 ```
 
 ## Data Location

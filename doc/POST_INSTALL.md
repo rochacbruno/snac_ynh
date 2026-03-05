@@ -7,7 +7,7 @@ Log in at: `https://__DOMAIN____PATH__/__ADMIN__/admin`
 You can reset the password later with:
 
 ```
-sudo -u __ID__ snac-admin resetpwd __ADMIN__
+snac-admin resetpwd __ADMIN__
 ```
 
 All configuration options are available in the YunoHost admin panel under **Apps > snac2 > Config Panel**.

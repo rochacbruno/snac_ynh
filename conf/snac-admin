@@ -5,5 +5,10 @@
 #          snac-admin resetpwd myuser
 #          snac-admin userlist
 
+# Re-exec as the snac user if running as root
+if [ "$(id -u)" -eq 0 ]; then
+    exec sudo -u __APP__ "$0" "$@"
+fi
+
 export SNAC_BASEDIR="__DATA_DIR__"
 exec "__INSTALL_DIR__/snac" "$@"

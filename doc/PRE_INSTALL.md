@@ -2,4 +2,4 @@ snac2 uses a file-based storage system that relies on hard links. The data direc
 
 The app is compiled from source during installation, which may take a few minutes depending on your server's hardware.
 
-**snac2 does not support LDAP or SSO.** User accounts are managed independently from YunoHost, using snac's own built-in authentication. You can manage users via the command line (`snac adduser`, `snac resetpwd`).
+**snac2 does not support LDAP or SSO.** User accounts are managed independently from YunoHost, using snac's own built-in authentication. You can manage users via the command line (`snac-admin adduser`, `snac-admin resetpwd`).
