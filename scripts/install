@@ -10,6 +10,20 @@ source /usr/share/yunohost/helpers
 #=================================================
 # INITIALIZE AND STORE SETTINGS
 #=================================================
+# Check that no other snac instance is already installed on this domain
+existing_snac=$(yunohost app list --output-as json | python3 -c "
+import json, sys
+apps = json.load(sys.stdin).get('apps', [])
+for a in apps:
+    if a.get('id', '').startswith('snac'):
+        dp = a.get('domain_path', '')
+        if dp.startswith('$domain/'):
+            print(a['id'])
+" 2>/dev/null)
+if [ -n "$existing_snac" ]; then
+    ynh_die "Another snac instance ($existing_snac) is already installed on domain $domain. Only one snac instance per domain is supported because ActivityPub federation endpoints (WebFinger, NodeInfo, API) must be handled by a single instance."
+fi
+
 ynh_script_progression "Initializing settings..."
 
 # Store admin account name for server.json
@@ -173,6 +187,11 @@ ynh_app_setting_set --key=generated_password --value="$generated_password"
 ynh_script_progression "Adding system configurations related to $app..."
 
 ynh_config_add_nginx
+
+# For subpath installs, add global well-known/API locations needed for federation
+if [ "$path" != "/" ]; then
+    ynh_config_add --template="nginx-wellknown.conf" --destination="/etc/nginx/conf.d/$domain.d/$app-wellknown.conf"
+fi
 
 ynh_config_add_systemd
 

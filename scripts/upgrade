@@ -122,6 +122,11 @@ ynh_script_progression "Upgrading system configurations related to $app..."
 
 ynh_config_add_nginx
 
+# For subpath installs, add global well-known/API locations needed for federation
+if [ "$path" != "/" ]; then
+    ynh_config_add --template="nginx-wellknown.conf" --destination="/etc/nginx/conf.d/$domain.d/$app-wellknown.conf"
+fi
+
 ynh_config_add_systemd
 
 mkdir -p "/var/log/$app"
