@@ -13,7 +13,10 @@ maintainers = ["rochacbruno"]
 
 [upstream]
 license = "MIT"
+demo = "https://comam.es/snac/"
 code = "https://codeberg.org/grunfink/snac2"
+fund = "https://ko-fi.com/grunfink"
+admindoc = "https://comam.es/snac-doc/"
 
 [integration]
 yunohost = ">= 12.1.17"
