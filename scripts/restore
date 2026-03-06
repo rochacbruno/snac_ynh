@@ -16,6 +16,9 @@ ynh_restore "$install_dir"
 
 chown -R "$app:www-data" "$install_dir"
 
+# Restore CLI wrapper symlink
+ln -sf "$install_dir/snac-admin" /usr/local/bin/snac-admin
+
 #=================================================
 # RESTORE THE DATA DIRECTORY
 #=================================================
@@ -31,7 +34,15 @@ chown -R "$app:$app" "$data_dir"
 ynh_script_progression "Restoring system configurations related to $app..."
 
 ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
-ynh_restore "/etc/nginx/conf.d/$domain.d/$app-wellknown.conf" || true
+
+# For subpath installs, restore or regenerate the well-known nginx config
+if [ "$path" != "/" ]; then
+    if [ -f "$YNH_APP_BACKUP_DIR/etc/nginx/conf.d/$domain.d/$app-wellknown.conf" ]; then
+        ynh_restore "/etc/nginx/conf.d/$domain.d/$app-wellknown.conf"
+    else
+        ynh_config_add --template="nginx-wellknown.conf" --destination="/etc/nginx/conf.d/$domain.d/$app-wellknown.conf"
+    fi
+fi
 
 ynh_restore "/etc/systemd/system/$app.service"
 systemctl enable "$app.service" --quiet

@@ -4,3 +4,6 @@ test_format = 1.0
 
 [default]
 args.admin = "testuser"
+
+# Snak don't support it
+exclude = [ "change_url" ]
