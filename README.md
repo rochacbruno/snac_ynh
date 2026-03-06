@@ -21,13 +21,9 @@ A simple, minimalistic ActivityPub instance (Fediverse) with a file-based storag
 
 ## Screenshots
 ![Screenshot of snac2](./doc/screenshots/admin_page.png)
-![Screenshot of snac2](./doc/screenshots/admin_panel.png)
-![Screenshot of snac2](./doc/screenshots/example.jpg)
-![Screenshot of snac2](./doc/screenshots/install_progress.png)
 ![Screenshot of snac2](./doc/screenshots/logo.png)
+![Screenshot of snac2](./doc/screenshots/post_form.jpg)
 ![Screenshot of snac2](./doc/screenshots/post_form.png)
-![Screenshot of snac2](./doc/screenshots/post_install.png)
-![Screenshot of snac2](./doc/screenshots/pre_install.png)
 ![Screenshot of snac2](./doc/screenshots/public_timeline.png)
 
 ## 📦 Developer info
