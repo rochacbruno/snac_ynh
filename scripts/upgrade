@@ -85,7 +85,7 @@ popd
 
 cp "$install_dir/src/snac" "$install_dir/snac"
 chmod 755 "$install_dir/snac"
-rm -rf "$install_dir/src"
+ynh_safe_rm "$install_dir/src"
 
 # Install CLI wrapper script
 ynh_config_add --template="snac-admin" --destination="$install_dir/snac-admin"
